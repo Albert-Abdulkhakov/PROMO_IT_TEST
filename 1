@@ -1,0 +1,116 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class Main {
+    static final  String userDir = System.getProperty("user.dir");
+    static final  String fileName = "UserFile.txt";
+
+    public static void main(String[] args) throws IOException {
+        String userCommand;
+        final  String exitCommand = "#exit";
+        final  String readCommand = "#read";
+        final  String writeCommand = "#write";
+        final  String statisticsCommand = "#statistics";
+        final  String createCommand = "#create";
+        String textMessage;
+
+        createFile();
+
+        textMessage = "Приветствую тебя пользователь!\n"
+            + "Привожу список команд, которыми ты можешь воспользоваться:\n"
+            + "#write (Добавление новой записи)\n"
+            + "#read (После чего выводится весь список)\n"
+            + "#statistics (Выводит статистику использование записной книжки)\n"
+            + "#exit (Завершение работы)\n";
+
+
+        Scanner user_input = new Scanner(System.in, "UTF-8");
+        System.out.println(textMessage);
+
+        do{
+            System.out.println("Введите команду:");
+            userCommand = user_input.nextLine();
+
+            if(userCommand.equals(writeCommand) ){
+                System.out.print("Введите ваши планы на сегодня:");
+                userCommand = user_input.nextLine();
+                writeTextInFiles(userCommand.toString());
+                System.out.println("");
+            }
+            else if(userCommand.equals(readCommand) ){
+                readTextFromFiles();
+            }
+            else if(userCommand.equals(statisticsCommand) ){
+                printStatisticsCommand();
+            }
+            else if(userCommand.equals(createCommand) ){
+                createFile();
+                System.out.println("Файл создан.\n");
+            }
+            else{
+                System.out.println("Неизвестная команда!\n");
+            };
+
+       }
+        while (!userCommand.equals(exitCommand));
+    }
+
+    public static void writeTextInFiles(String userCommand){
+
+        //String dateNow = java.time.LocalDateTime.now().toString();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+
+
+        try {
+            FileWriter writer = new FileWriter(userDir.concat("\\").concat(fileName), true);
+            writer.write( dateFormat.format(date) + " " + userCommand + "\n");
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Ошибка записи в файл: " + e.getMessage());
+        }
+    }
+
+    public static void readTextFromFiles(){
+
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(new File(userDir.concat("\\").concat(fileName)));
+        } catch (FileNotFoundException e) {
+            System.out.println("Ошибка чтения файла! \n" +
+                    "Введите команду #create, чтобы создать файл.\n");
+            return;
+        }
+
+        if(scanner.hasNextLine()) {
+            while (scanner.hasNextLine()) {
+                System.out.println(scanner.nextLine());
+            }
+        }
+        else{
+            System.out.println("В файле отсутствуют данные для вывода.");
+        }
+
+        scanner.close();
+
+        System.out.println("");
+    }
+
+    public static void createFile() throws IOException {
+        File file = new File(userDir.concat("\\").concat(fileName));
+        file.createNewFile();
+    }
+
+    public static void printStatisticsCommand(){
+        System.out.println("Алгоритмы расчета команды '#statistics' не завершены, по причине нехватки времени!\n" +
+            "Доработка команды возможно будет реализована в следующем обновлении :)\n");
+    }
+}
+
+
